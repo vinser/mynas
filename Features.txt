@@ -1,0 +1,35 @@
+System
+    General settings
+    Date & Time
+    Network
+    Notification
+    Power Management
+    Monitoring
+    Certificates
+    Sheduled Jobs
+    Update Management
+    Plugins
+Storage
+    Disks
+    S.M.A.R.T.
+    RAID Management
+    File Systems
+    Flash Memory
+Access Rights Management
+    User
+    Group
+    Shared Folders
+Services
+    BitTorrent
+    FTP
+    MySQL
+    NFS
+    Nginx
+    Rsync
+    SMB/CIFS
+    SSH
+Diagnostics
+    Dashboard
+    System Informstion
+    System Logs
+    Services
