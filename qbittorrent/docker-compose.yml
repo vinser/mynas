@@ -11,7 +11,7 @@ services:
       - UMASK_SET=022
       - WEBUI_PORT=8080
     volumes:
-      - /mnt/data/qbittorrent/config:/config
+      - /etc/qbittorrent/config:/config
       - /mnt/data/public/загрузки:/downloads
     ports:
       - 6881:6881
