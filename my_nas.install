@@ -106,34 +106,6 @@ ExecStart=/usr/bin/wsdd --shortlog
     systemctl enable wsdd
     systemctl status wsdd
 
-#Install qbittorrent
-#https://github.com/qbittorrent/qBittorrent/wiki/Setting-up-qBittorrent-on-Ubuntu-server-as-daemon-with-Web-interface-(15.04-and-newer)
-    apt install qbittorrent-nox
-    nano /etc/systemd/system/qbittorrent.service
-#---
-[Unit]
-Description=qBittorrent Daemon Service
-Documentation=man:qbittorrent-nox(1)
-Wants=network-online.target
-After=network-online.target nss-lookup.target local-fs.target
-BindsTo=media-data.mount
-
-[Service]
-# if you have systemd >= 240, you probably want to use Type=exec instead
-#Type=simple
-Type=exec
-User=nas
-ExecStart=/usr/bin/qbittorrent-nox
-TimeoutStopSec=infinity
-
-[Install]
-WantedBy=multi-user.target
-#---
-    systemctl daemon-reload
-    systemctl start qbittorrent    
-    systemctl status qbittorrent
-    systemctl enable qbittorrent
-
 #Install Docker and Docker-Compose 
 #       https://jonathanmeier.io/install-docker-and-docker-compose-raspberry-pi/
 #       http://diytimes.ru/post/148
@@ -163,6 +135,34 @@ WantedBy=multi-user.target
 
 
 #================================================== options
+#Install qbittorrent
+#https://github.com/qbittorrent/qBittorrent/wiki/Setting-up-qBittorrent-on-Ubuntu-server-as-daemon-with-Web-interface-(15.04-and-newer)
+    apt install qbittorrent-nox
+    nano /etc/systemd/system/qbittorrent.service
+#---
+[Unit]
+Description=qBittorrent Daemon Service
+Documentation=man:qbittorrent-nox(1)
+Wants=network-online.target
+After=network-online.target nss-lookup.target local-fs.target
+BindsTo=media-data.mount
+
+[Service]
+# if you have systemd >= 240, you probably want to use Type=exec instead
+#Type=simple
+Type=exec
+User=nas
+ExecStart=/usr/bin/qbittorrent-nox
+TimeoutStopSec=infinity
+
+[Install]
+WantedBy=multi-user.target
+#---
+    systemctl daemon-reload
+    systemctl start qbittorrent    
+    systemctl status qbittorrent
+    systemctl enable qbittorrent
+
 #install sopds
 #    see sopdsinstall.txt
 
