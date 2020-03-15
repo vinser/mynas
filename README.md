@@ -1,2 +1,2 @@
 # mynas
-MyNAS
+My NAS
