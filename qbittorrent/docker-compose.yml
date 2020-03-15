@@ -2,7 +2,7 @@
 version: "2"
 services:
   qbittorrent:
-    image: linuxserver/qbittorrent
+    image: linuxserver/qbittorrent:unstable
     container_name: qbittorrent
     environment:
       - PUID=1000
