@@ -1,0 +1,178 @@
+#Armbian install on Odroid HC1
+#    Armbian_20.02.1_Odroidxu4_buster_current_5.4.19_minimal.img
+
+#Check and update firmware https://wiki.odroid.com/odroid-xu4/software/jms578_fw_update
+
+#Upgrade
+    apt update
+    apt upgrade
+    #apt install armbian-config
+
+
+#Move rootfs https://wiki.odroid.com/odroid-xu4/software/building_webserver#make_your_ssd_a_root_partition
+    
+#   Make rootfs partition
+        fdisk /dev/sda
+#   Make filesystems    
+        mkfs.ext4 /dev/sda1
+        mkfs.ext4 /dev/sda2
+#   Mount it to specific directory to use your SSD.
+#   Make new directories for SSD.
+        mkdir -p /mnt/system
+        mkdir -p /mnt/data
+#   Use /mnt/systemdrive as a root partition, and /mnt/data as a data partition.
+        mount /dev/sda1 /mnt/system
+        mount /dev/sda2 /mnt/data
+#   Check if it is mounted properly.
+        df -h
+#   Change rootfs partition
+#       nano /boot/armbianEnv.txt
+#---
+board_name=hc1
+rootdev=UUID=5323b5cc-5aa5-4c74-a35a-d74a29388d53
+rootfstype=ext4
+verbosity=1
+#---
+#   nano /etc/fstab 
+#---
+#UUID=289c15a6-61a0-405f-b66e-6b7b13c350ef / ext4 defaults,noatime,nodiratime,commit=600,errors=remount-ro 0 1
+tmpfs /tmp tmpfs defaults,nosuid 0 0
+/dev/sda1 / ext4 defaults,noatime 0 1
+/dev/sda2 /mnt/data ext4 defaults 0 2
+#---
+#   Copy a root partition    
+        rsync -axv / /mnt/system
+#   Check rootfs mount piont 
+        reboot
+        lsblk -f
+
+#Tune
+#    Time zone
+        dpkg-reconfigure tzdata
+  
+#    Locale
+        dpkg-reconfigure locales
+
+#Install Cockpit http://localhost:9090
+apt-get install cockpit cockpit-networkmanager cockpit-dashboard cockpit-storaged cockpit-packagekit cockpit-docker
+    Change hostname
+
+
+#Install samba https://linuxrussia.com/samba-basic-setup.html
+    apt install samba
+    systemctl status smbd # to test deamon
+    cp /etc/samba/smb.conf /etc/samba/smb-default.conf
+#    Insert in /etc/samba/smb.conf
+#---
+[медиа]
+    comment = No limits here.
+    path = /mnt/data/public
+    guest ok = yes
+    browseable = yes
+    writable = yes
+    create mask = 0644
+    directory mask = 0755
+    force user = nas
+#---
+#    adduser --system publicshare
+#    chown publicshare /mnt/data
+    groupadd -g 1000 nas
+    useradd 
+    chown nas /mnt/data/public
+
+#Install WSD deamon
+#       https://github.com/christgau/wsdd
+#       https://unix.stackexchange.com/questions/166473/debian-how-to-run-a-script-on-startup-as-soon-as-there-is-an-internet-connecti/401080#401080
+#       https://forums.linuxmint.com/viewtopic.php?t=199907
+
+    wget https://github.com/christgau/wsdd/archive/master.zip
+    unzip master.zip
+    mv wsdd-master/src/wsdd.py wsdd-master/src/wsdd
+    cp wsdd-master/src/wsdd /usr/bin
+    cp wsdd-master/etc/systemd/wsdd.service /etc/systemd/system
+    nano /etc/systemd/system/wsdd.service
+#---
+[Service]
+Type=simple
+ExecStartPre=/bin/sleep 2 ;+++ to insert
+ExecStart=/usr/bin/wsdd --shortlog
+; Replace those with an unprivledged user/group that matches your environment,
+; like nobody/nogroup or daemon:daemon or a dedicated user for wsdd
+#User=nobody  ;--- to comment
+#Group=nobody ;--- to comment
+#---
+    systemctl daemon-reload
+    systemctl start wsdd
+    systemctl enable wsdd
+    systemctl status wsdd
+
+#Install qbittorrent
+#https://github.com/qbittorrent/qBittorrent/wiki/Setting-up-qBittorrent-on-Ubuntu-server-as-daemon-with-Web-interface-(15.04-and-newer)
+    apt install qbittorrent-nox
+    nano /etc/systemd/system/qbittorrent.service
+#---
+[Unit]
+Description=qBittorrent Daemon Service
+Documentation=man:qbittorrent-nox(1)
+Wants=network-online.target
+After=network-online.target nss-lookup.target local-fs.target
+BindsTo=media-data.mount
+
+[Service]
+# if you have systemd >= 240, you probably want to use Type=exec instead
+#Type=simple
+Type=exec
+User=nas
+ExecStart=/usr/bin/qbittorrent-nox
+TimeoutStopSec=infinity
+
+[Install]
+WantedBy=multi-user.target
+#---
+    systemctl daemon-reload
+    systemctl start qbittorrent    
+    systemctl status qbittorrent
+    systemctl enable qbittorrent
+
+#Install Docker and Docker-Compose 
+#       https://jonathanmeier.io/install-docker-and-docker-compose-raspberry-pi/
+#       http://diytimes.ru/post/148
+
+    #apt install curl
+    curl -sSL https://get.docker.com | sh
+    #for no root - usermod -aG docker <your_user>
+    docker run --rm hello-world
+    
+    #apt install gcc make
+    apt install python3-pip
+    apt install python3-dev
+    apt install libffi-dev
+    apt install libssl-dev
+    apt install python3-wheel
+    pip3 install setuptools
+    pip3 install PyNaCl
+    pip3 install docker-compose
+
+#Install Docker containers
+#--------------------------
+# qBittorrent
+#       https://hub.docker.com/r/linuxserver/qbittorrent
+#       
+
+# Simple OPDS 
+
+
+#================================================== options
+#install sopds
+#    see sopdsinstall.txt
+
+#Install Portainer
+#       https://www.portainer.io/installation/
+
+    docker volume create portainer_data
+    docker run -d -p 8000:8000 -p 9000:9000 --name=portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer
+
+#Install
+
+#install
+
