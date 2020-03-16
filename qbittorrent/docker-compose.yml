@@ -1,3 +1,6 @@
+---
+version: "2"
+services:
   qbittorrent:
       image: gists/qbittorrent
       ports:
@@ -9,4 +12,4 @@
       environment:
           - UID=1000
           - GID=1000
-    restart: always
+      restart: always
