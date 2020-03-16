@@ -145,7 +145,7 @@ Description=qBittorrent Daemon Service
 Documentation=man:qbittorrent-nox(1)
 Wants=network-online.target
 After=network-online.target nss-lookup.target local-fs.target
-BindsTo=media-data.mount
+BindsTo=mnt-data.mount
 
 [Service]
 # if you have systemd >= 240, you probably want to use Type=exec instead
