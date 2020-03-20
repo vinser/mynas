@@ -1,0 +1,57 @@
+version: "2"
+services:
+  pg:
+    restart: always
+    image: postgres:10.3
+    environment:
+      - DEBUG=false
+      - PG_TRUST_LOCALNET=true
+      - POSTGRES_DB=sopds
+      - POSTGRES_USER=sopds
+      - POSTGRES_PASSWORD=sopds
+    volumes:
+      - pg-data:/var/lib/postgresql
+      - pg-run:/run/postgresql
+    command: >
+      -c shared_buffers=128MB
+      -c work_mem=128MB
+      -c maintenance_work_mem=64MB
+      -c temp_buffers=128MB
+      -c autovacuum=on
+      -c synchronous_commit=off
+      -c commit_delay=1000
+  server:
+    restart: always
+    image: vinser/sopds-compose:latest
+    environment:
+      - POSTGRES_DB=sopds
+      - POSTGRES_USER=sopds
+      - POSTGRES_PASSWORD=sopds
+      - POSTGRES_HOST=pg
+    links:
+      - pg:pg
+    depends_on:
+      - pg
+    ports:
+      - 8001:8001
+    volumes:
+      - "/media/data/sopds/books:/books"
+  scanner:
+    restart: always
+    image: vinser/sopds-compose:latest
+    environment:
+      - POSTGRES_DB=sopds
+      - POSTGRES_USER=sopds
+      - POSTGRES_PASSWORD=sopds
+      - POSTGRES_HOST=pg
+    links:
+      - pg:pg
+    depends_on:
+      - pg
+      - server
+    volumes:
+      - "/media/data/sopds/books:/books"
+    command: scanner
+volumes:
+  pg-data:
+  pg-run:

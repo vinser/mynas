@@ -115,7 +115,7 @@ ExecStart=/usr/bin/wsdd --shortlog
     #for no root - usermod -aG docker <your_user>
     docker run --rm hello-world
     
-    #apt install gcc make
+    apt install gcc make
     apt install python3-pip
     apt install python3-dev
     apt install libffi-dev
@@ -132,6 +132,8 @@ ExecStart=/usr/bin/wsdd --shortlog
 #       
 
 # Simple OPDS 
+
+
 
 
 #================================================== options
