@@ -26,14 +26,14 @@
 #   Check if it is mounted properly.
         df -h
 #   Change rootfs partition
-#       nano /boot/armbianEnv.txt
+       nano /boot/armbianEnv.txt
 #---
 board_name=hc1
-rootdev=UUID=5323b5cc-5aa5-4c74-a35a-d74a29388d53
+rootdev=UUID=c525d19c-4117-4e2c-83e7-638dd819d2ae
 rootfstype=ext4
 verbosity=1
 #---
-#   nano /etc/fstab 
+   nano /etc/fstab 
 #---
 #UUID=289c15a6-61a0-405f-b66e-6b7b13c350ef / ext4 defaults,noatime,nodiratime,commit=600,errors=remount-ro 0 1
 tmpfs /tmp tmpfs defaults,nosuid 0 0
@@ -63,6 +63,7 @@ apt-get install cockpit cockpit-networkmanager cockpit-dashboard cockpit-storage
     systemctl status smbd # to test deamon
     cp /etc/samba/smb.conf /etc/samba/smb-default.conf
 #    Insert in /etc/samba/smb.conf
+    nano /etc/samba/smb.conf
 #---
 [медиа]
     comment = No limits here.
@@ -110,7 +111,7 @@ ExecStart=/usr/bin/wsdd --shortlog
 #       https://jonathanmeier.io/install-docker-and-docker-compose-raspberry-pi/
 #       http://diytimes.ru/post/148
 
-    #apt install curl
+    apt install curl
     curl -sSL https://get.docker.com | sh
     #for no root - usermod -aG docker <your_user>
     docker run --rm hello-world
